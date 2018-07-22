@@ -282,7 +282,7 @@ namespace Nerdz.Rotation
                 case Auras.RuthlessPrecision: return WoW.PlayerHasBuff("RuthlessPrecision");
                 case Auras.TrueBearing: return WoW.PlayerHasBuff("TrueBearing");
                 case Auras.Broadside: return WoW.PlayerHasBuff("Broadside");
-                case Auras.BladeFlurry: return WoW.PlayerHasBuff("Blade Flurry");
+                case Auras.BladeFlurry: return WoW.PlayerHasBuff("BladeFlurry");
                 case Auras.Opportunity: return WoW.PlayerHasBuff("Opportunity");
                 case Auras.Swordplay: return WoW.PlayerHasBuff("Swordplay");
                 case Auras.LoadedDice: return WoW.PlayerHasBuff("LoadedDice");
@@ -305,7 +305,7 @@ namespace Nerdz.Rotation
                 case Auras.RuthlessPrecision: return WoW.PlayerBuffTimeRemaining("RuthlessPrecision");
                 case Auras.Broadside: return WoW.PlayerBuffTimeRemaining("Broadside");
                 case Auras.TrueBearing: return WoW.PlayerBuffTimeRemaining("TrueBearing");
-                case Auras.BladeFlurry: return WoW.PlayerBuffTimeRemaining("Blade Flurry");
+                case Auras.BladeFlurry: return WoW.PlayerBuffTimeRemaining("BladeFlurry");
                 case Auras.LoadedDice: return WoW.PlayerBuffTimeRemaining("LoadedDice");
                 case Auras.Mantle: return WoW.TargetDebuffTimeRemaining("Mantle");
                 case Auras.GhostlyStrike: return WoW.TargetDebuffTimeRemaining("Ghostly Strike");                
@@ -422,7 +422,7 @@ namespace Nerdz.Rotation
         {
             if (!condition) { return false; }
 
-            if (WoW.CanCast(spell))
+            if (WoW.CanPreCast(spell))
             {
                 WoW.CastSpell(spell);
                 LogWrite(spell);
@@ -670,23 +670,23 @@ namespace Nerdz.Rotation
         #region cds
         public void cds()
         {
-            WriteLog("CDs");
+            
             //-- # Cooldowns
             //--actions.cds = potion,if= buff.bloodlust.react | target.time_to_die <= 60 | buff.adrenaline_rush.up
             //-- actions.cds +=/ blood_fury
             //-- actions.cds +=/ berserking
             //-- actions.cds +=/ adrenaline_rush,if= !buff.adrenaline_rush.up & energy.time_to_max > 1
-            if (SpellCast("AdrenalineRush", !HasAura(Auras.AdrenalineRush) /*&& energy_time_to_max > 1*/)) return;
+            if (SpellCast("AdrenalineRush", !HasAura(Auras.AdrenalineRush) && WoW.UseCooldowns /*&& energy_time_to_max > 1*/)) return;
             //-- actions.cds +=/ marked_for_death,target_if = min:target.time_to_die,if= target.time_to_die < combo_points.deficit | ((raid_event.adds.in> 40 | buff.true_bearing.remains > 15 - buff.adrenaline_rush.up * 5)&!stealthed.rogue & combo_points.deficit >= cp_max_spend - 1)
             if (SpellCast("MarkedforDeath", HasTalent(Talent.MarkedforDeath) && WoW.UseCooldowns && !PreCheck(Precheck.Stealth) & ComboPointsDeficit >= ComboPointsSpend - 1)) return;
             //-- actions.cds +=/ blade_flurry,if= spell_targets.blade_flurry >= 2 & !buff.blade_flurry.up
-            if (SpellCast("BladeFlurry", _ForceAoE && !HasAura(Auras.BladeFlurry))) return;
+           
             //-- actions.cds +=/ ghostly_strike,if= variable.blade_flurry_sync & combo_points.deficit >= 1 + buff.broadside.up
             if (SpellCast("GhostlyStrike", HasTalent(Talent.GhostlyStrike) && ComboPointsDeficit >= 1 + Convert.ToInt32(HasAura(Auras.Broadside)))) return;
             //-- actions.cds +=/ killing_spree,if= variable.blade_flurry_sync & (energy.time_to_max > 5 | energy < 15)
             if (SpellCast("KillingSpree", HasTalent(Talent.KillingSpree) && ComboPointsDeficit >= 1 + Convert.ToInt32(HasAura(Auras.Broadside)))) return;
             //-- actions.cds +=/ blade_rush,if= variable.blade_flurry_sync & energy.time_to_max > 1
-            if (SpellCast("BladeRush", HasTalent(Talent.BladeRush) && WoW.GetAsyncKeyState(Keys.NumPad3) < 0)) return;
+            
             //-- # Using Vanish/Ambush is only a very tiny increase, so in reality, you're absolutely fine to use it as a utility spell.
             //-- actions.cds +=/ vanish,if= !stealthed.all & variable.ambush_condition
             //-- actions.cds +=/ shadowmeld,if= !stealthed.all & variable.ambush_condition
@@ -697,7 +697,7 @@ namespace Nerdz.Rotation
         #region finish
         public void finish()
         {
-            WriteLog("Finishing");
+            
             //# Finishers
             //--actions.finish = slice_and_dice,if= buff.slice_and_dice.remains < target.time_to_die & buff.slice_and_dice.remains < (1 + combo_points) * 1.8
             if (SpellCast("SliceandDice", HasTalent(Talent.SliceandDice) && AuraRemaining(Auras.SliceandDice) < (1 + Power(Unit.ComboPoints)) * 1.8)) return;
@@ -715,7 +715,7 @@ namespace Nerdz.Rotation
         #region build
         public void build()
         {
-            WriteLog("Building CP: ");
+          
             //# Builders
             //--actions.build = pistol_shot,if= combo_points.deficit >= 1 + buff.broadside.up + talent.quick_draw.enabled & buff.opportunity.up
             if (SpellCast("PistolShot", ComboPointsDeficit >= 1 + Convert.ToInt32(HasAura(Auras.Broadside)) + Convert.ToInt32(HasTalent(Talent.QuickDraw)) && HasAura(Auras.Opportunity))) return;
@@ -750,9 +750,13 @@ namespace Nerdz.Rotation
                 }
             }
             #endregion
-            WriteLog("RTBRemaining: " + RTBRemaining);
-            WriteLog("RTBCount: " + RtbCount);
-            WriteLog("ComboPoints: " + WoW.CurrentComboPoints);
+            //WriteLog("RTBRemaining: " + RTBRemaining);
+            //WriteLog("RTBCount: " + RtbCount);
+            //WriteLog("ComboPoints: " + WoW.CurrentComboPoints);
+            AoECheck();
+            if (SpellCast("BladeFlurry", _ForceAoE && !HasAura(Auras.BladeFlurry))) return;
+            if (SpellCast("BladeRush", HasTalent(Talent.BladeRush) && WoW.GetAsyncKeyState(Keys.NumPad5) < 0)) return;
+            if (SpellCast("AdrenalineRush", !HasAura(Auras.AdrenalineRush) && (WoW.UseCooldowns || WoW.GetAsyncKeyState(Keys.NumPad3) < 0)/*&& energy_time_to_max > 1*/)) return;
             if ((Player(Status.TargetBoss) || !Player(Status.TargetBoss)) && Player(Status.InCombat) && Player(Status.TargetEnemy) && WoW.IsSpellInRange("SinisterStrike"))
             {
                 //# Executed every time the actor is available.
@@ -975,6 +979,7 @@ Spell,137619,MarkedforDeath,
 Spell,5171,SliceandDice,
 Spell,51690,KillingSpree,
 
+Buff,13877,BladeFlurry
 Buff,193356,Broadside
 Buff,199600,BuriedTreasure
 Buff,193358,GrandMelee
