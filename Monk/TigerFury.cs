@@ -1,11 +1,11 @@
-﻿using Pixie.Helpers;
+﻿using Nerdz.Helpers;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace Pixie.Rotation
+namespace Nerdz.Rotation
 {
     public class TigerFury : CombatRoutine
     {
@@ -95,262 +95,6 @@ namespace Pixie.Rotation
 
         #endregion
 
-        #region Enums
-
-        private enum Auras
-        {
-            Serenity,
-            StormEarthandFire,
-            Bloodlust,
-            PressurePoint,
-            RushingJadeWind,
-            BlackoutKick,
-            TheEmperorsCapacitor,
-            TimeWarp,
-            TouchofDeath
-        }
-
-        private enum Spells
-        {
-            StormEarthandFire,
-            Serenity,
-            StrikeoftheWindlord,
-            FistsofFury,
-            RisingSunKick,
-            EnergizingElixir,
-            TouchofDeath,
-            WhirlingDragonPunch
-        }
-
-        private enum Item
-        {
-            HiddenMastersForbiddenTouch,
-            DrinkingHornCover,
-            TheEmperorsCapacitor
-        }
-
-        private enum Talent
-        {
-            ChiBurst,
-            EyeoftheTiger,
-            ChiWave,
-            ChiTorpedo,
-            TigersLust,
-            Celerity,
-            EnergizingElixir,
-            Ascension,
-            PowerStrikes,
-            RingofPeace,
-            SummonBlackOxStatue,
-            LegSweep,
-            HealingElixir,
-            DiffuseMagic,
-            DampenHarm,
-            RushingJadeWind,
-            InvokeXuentheWhiteTiger,
-            HitCombo,
-            ChiOrbit,
-            WhirlingDragonPunch,
-            Serenity
-        }
-
-        private enum Unit
-        {
-            Astral,
-            Chi,
-            ComboPoints,
-            Energy,
-            Focus,
-            Holy,
-            Maelstrom,
-            Mana,
-            Pain,
-            Power,
-            Rage,
-            Runes,
-            Runic,
-            SoulShards,
-            TargetHP,
-            PlayerHP,
-            EnemyCount
-        }
-
-        private enum Race
-        {
-            Tauren,
-            Troll,
-            Human,
-            Dwarf,
-            NightElf,
-            Gnome,
-            Draenei,
-            Pandaren,
-            Orc,
-            Scourge,
-            BloodElf,
-            Goblin,
-			VoidElf,
-            Worgen
-        }
-
-        private enum Status
-        {
-            HasTarget,
-            InCombat,
-            TargetEnemy,
-            TargetBoss,
-            HasPet,
-            IsCasting,
-            IsChanneling,
-            IsMoving,
-            TargetFriend,
-            TargetVisible
-        }
-
-        private enum Bonus
-        {
-            T19Two,
-            T19Four,
-            T20Two,
-            T20Four,
-            T21Two,
-            T21Four
-        }
-
-        private enum Precheck
-        {
-            Combat,
-            RangeCombat,
-        }
-
-        #endregion
-
-        #region Wrappers
-
-        #region Item
-
-        private static bool HasItem(Item item)
-        {
-            switch (item)
-            {
-                case Item.HiddenMastersForbiddenTouch: return WoW.IsItemEquipped("HiddenMastersForbiddenTouch");
-                case Item.DrinkingHornCover: return WoW.IsItemEquipped("DrinkingHornCover");
-                case Item.TheEmperorsCapacitor: return WoW.IsItemEquipped("TheEmperorsCapacitor");
-                default: return false;
-            }
-        }
-
-        #endregion
-
-        #region Talents
-
-        private static bool HasTalent(Talent talent)
-        {
-            switch (talent)
-            {
-                case Talent.ChiBurst: return WoW.Talent(1) == 1;
-                case Talent.EyeoftheTiger: return WoW.Talent(1) == 2;
-                case Talent.ChiWave: return WoW.Talent(1) == 3;
-                case Talent.ChiTorpedo: return WoW.Talent(2) == 1;
-                case Talent.TigersLust: return WoW.Talent(2) == 2;
-                case Talent.Celerity: return WoW.Talent(2) == 3;
-                case Talent.EnergizingElixir: return WoW.Talent(3) == 1;
-                case Talent.Ascension: return WoW.Talent(3) == 2;
-                case Talent.PowerStrikes: return WoW.Talent(3) == 3;
-                case Talent.RingofPeace: return WoW.Talent(4) == 1;
-                case Talent.SummonBlackOxStatue: return WoW.Talent(4) == 2;
-                case Talent.LegSweep: return WoW.Talent(4) == 3;
-                case Talent.HealingElixir: return WoW.Talent(5) == 1;
-                case Talent.DiffuseMagic: return WoW.Talent(5) == 2;
-                case Talent.DampenHarm: return WoW.Talent(5) == 3;
-                case Talent.RushingJadeWind: return WoW.Talent(6) == 1;
-                case Talent.InvokeXuentheWhiteTiger: return WoW.Talent(6) == 2;
-                case Talent.HitCombo: return WoW.Talent(6) == 3;
-                case Talent.ChiOrbit: return WoW.Talent(7) == 1;
-                case Talent.WhirlingDragonPunch: return WoW.Talent(7) == 2;
-                case Talent.Serenity: return WoW.Talent(7) == 3;
-                default: return false;
-            }
-        }
-
-        #endregion
-
-        #region Auras
-
-        private static bool HasAura(Auras aura)
-        {
-            switch (aura)
-            {
-                case Auras.Serenity: return WoW.PlayerHasBuff("SerenityAura");
-                case Auras.StormEarthandFire: return WoW.PlayerHasBuff("StormEarthandFireAura");
-                case Auras.Bloodlust: return WoW.PlayerHasBuff("BloodlustAura");
-                case Auras.PressurePoint: return WoW.PlayerHasBuff("PressurePointAura");
-                case Auras.RushingJadeWind: return WoW.PlayerHasBuff("RushingJadeWindAura");
-                case Auras.BlackoutKick: return WoW.PlayerHasBuff("BlackoutKickAura");
-                case Auras.TheEmperorsCapacitor: return WoW.PlayerHasBuff("TheEmperorsCapacitorAura");
-                case Auras.TimeWarp: return WoW.PlayerHasBuff("TimeWarpAura");
-                case Auras.TouchofDeath: return WoW.TargetHasDebuff("TouchofDeathAura");
-
-                default: return false;
-            }
-        }
-
-        private static int AuraRemaining(Auras aura)
-        {
-            switch (aura)
-            {
-                case Auras.Serenity: return WoW.PlayerBuffTimeRemaining("SerenityAura");
-                case Auras.StormEarthandFire: return WoW.PlayerBuffTimeRemaining("StormEarthandFireAura");
-                case Auras.Bloodlust: return WoW.PlayerBuffTimeRemaining("BloodlustAura");
-                case Auras.PressurePoint: return WoW.PlayerBuffTimeRemaining("PressurePointAura");
-                case Auras.RushingJadeWind: return WoW.PlayerBuffTimeRemaining("RushingJadeWindAura");
-                case Auras.BlackoutKick: return WoW.PlayerBuffTimeRemaining("BlackoutKickAura");
-                case Auras.TheEmperorsCapacitor: return WoW.PlayerBuffTimeRemaining("TheEmperorsCapacitorAura");
-                case Auras.TimeWarp: return WoW.PlayerBuffTimeRemaining("TimeWarpAura");
-                case Auras.TouchofDeath: return WoW.TargetDebuffTimeRemaining("TouchofDeathAura");
-                //case Auras.ExampleCooldown: return WoW.PlayerCooldownTimeRemaining("SpellName");
-                default: return 0;
-            }
-        }
-
-        private static int AuraStacks(Auras aura)
-        {
-            switch (aura)
-            {
-                //case Auras.ExampleSpell: return WoW.PlayerBuffStacks("ExampleSpell");
-                //case Auras.ExampleSpell1: return WoW.TargetDebuffStacks("ExampleSpell1");
-                default: return 0;
-            }
-        }
-
-        private static int SpellCD(Spells spell)
-        {
-            switch (spell)
-            {
-                case Spells.StormEarthandFire: return WoW.PlayerCooldownTimeRemaining("StormEarthandFire");
-                case Spells.Serenity: return WoW.PlayerCooldownTimeRemaining("Serenity");
-                case Spells.FistsofFury: return WoW.PlayerCooldownTimeRemaining("FistsofFury");
-                case Spells.RisingSunKick: return WoW.PlayerCooldownTimeRemaining("RisingSunKick");
-                case Spells.StrikeoftheWindlord: return WoW.PlayerCooldownTimeRemaining("StrikeoftheWindlord");
-                case Spells.EnergizingElixir: return WoW.PlayerCooldownTimeRemaining("EnergizingElixir");
-                case Spells.TouchofDeath: return WoW.PlayerCooldownTimeRemaining("TouchofDeath");
-                case Spells.WhirlingDragonPunch: return WoW.PlayerCooldownTimeRemaining("WhirlingDragonPunch");
-                default: return 0;
-            }
-        }
-
-        private static int SpellCharges(Spells spell)
-        {
-            switch (spell)
-            {
-                //case Spells.StormEarthandFire: return WoW.PlayerSpellCharges("StormEarthandFireCharge");
-                //case Spells.Serenity: return WoW.PlayerSpellCharges("SerenityCharge");
-                default: return 0;
-            }
-        }
-
-        #endregion
-
         #region Settings
 
         private static string ExampleCombo
@@ -363,7 +107,6 @@ namespace Pixie.Rotation
         {
             ExampleCombo = Convert.ToString(Interface.ExampleCombo.SelectedItem);
         }
-		
 
         private static string ExampleNum
         {
@@ -407,139 +150,21 @@ namespace Pixie.Rotation
 
         #endregion
 
-        #region PreChecks
-
-        //You can Use PreChecks for Spells with Long conditions to keep the rotation part of your routine Clean
-        private static bool PreCheck(Precheck ability)
-        {
-            switch (ability)
-            {
-                case Precheck.Combat: return (WoW.PlayerHasTarget || WoW.TargetIsBoss) && WoW.PlayerIsInCombat && WoW.TargetIsEnemy && WoW.IsSpellInRange("Tiger Palm") && WoW.PlayerHealthPercent > 0;
-
-                case Precheck.RangeCombat: return (WoW.PlayerHasTarget || WoW.TargetIsBoss) && WoW.PlayerIsInCombat && WoW.TargetIsEnemy && WoW.IsSpellInRange("Crackling Jade Lightning") && WoW.PlayerHealthPercent > 0;
-
-                default:
-                    return false;
-            }
-        }
-
-        #endregion
-
         #region System
-
-        private bool SpellCast(string spell, bool condition = true)
-        {
-            if (!condition) { return false; }
-
-            if (WoW.CanCast(spell))
-            {
-                WoW.CastSpell(spell);
-                LogWrite(spell);
-                if (spell == "TigerPalm")
-                {
-                    _TPLastSpell = true;
-                    _BOKLastSpell = false;
-                }
-                return true;
-            }
-
-            return false;
-        }
 
         private static float CurrentGlobalCooldown
         {
-            get { return Convert.ToSingle(150f / (1 + (WoW.PlayerHastePercent / 100f))) > 75f ? Convert.ToSingle(150f / (1 + (WoW.PlayerHastePercent / 100f))) : 75f; }
-        }
-
-        private static int Power(Unit unit)
-        {
-            switch (unit)
-            {
-                case Unit.Astral: return WoW.CurrentAstralPower;
-                case Unit.Chi: return WoW.CurrentChi;
-                case Unit.ComboPoints: return WoW.CurrentComboPoints;
-                case Unit.Energy: return WoW.CurrentEnergy;
-                case Unit.Focus: return WoW.CurrentFocus;
-                case Unit.Holy: return WoW.CurrentHolyPower;
-                case Unit.Maelstrom: return WoW.CurrentMaelstrom;
-                case Unit.Mana: return WoW.CurrentMana;
-                case Unit.Pain: return WoW.CurrentPain;
-                case Unit.Power: return WoW.CurrentPower;
-                case Unit.Rage: return WoW.CurrentRage;
-                case Unit.Runes: return WoW.CurrentRunes;
-                case Unit.Runic: return WoW.CurrentRunicPower;
-                case Unit.SoulShards: return WoW.CurrentSoulShards;
-                case Unit.TargetHP: return WoW.TargetHealthPercent;
-                case Unit.PlayerHP: return WoW.PlayerHealthPercent;
-                case Unit.EnemyCount: return WoW.CurrentEnemyUnitCount;
-                default: return 0;
-            }
-        }
-
-        private static bool PlayerRace(Race race)
-        {
-            switch (race)
-            {
-                case Race.Tauren: return WoW.PlayerRace == "Tauren";
-                case Race.Troll: return WoW.PlayerRace == "Troll";
-                case Race.Human: return WoW.PlayerRace == "Human";
-                case Race.Dwarf: return WoW.PlayerRace == "Dwarf";
-                case Race.NightElf: return WoW.PlayerRace == "NightElf";
-                case Race.Gnome: return WoW.PlayerRace == "Gnome";
-                case Race.Draenei: return WoW.PlayerRace == "Draenei";
-                case Race.Pandaren: return WoW.PlayerRace == "Pandaren";
-                case Race.Orc: return WoW.PlayerRace == "Orc";
-                case Race.Scourge: return WoW.PlayerRace == "Scourge";
-                case Race.BloodElf: return WoW.PlayerRace == "BloodElf";
-                case Race.Goblin: return WoW.PlayerRace == "Goblin";
-                case Race.Worgen: return WoW.PlayerRace == "Worgen";
-				case Race.VoidElf: return WoW.PlayerRace == "VoidElf";
-                default: return false;
-            }
-        }
-
-        private static bool Player(Status player)
-        {
-            switch (player)
-            {
-                case Status.HasTarget: return WoW.PlayerHasTarget;
-                case Status.InCombat: return WoW.PlayerIsInCombat;
-                case Status.TargetEnemy: return WoW.TargetIsEnemy;
-                case Status.TargetBoss: return WoW.TargetIsBoss;
-                case Status.HasPet: return WoW.PlayerHasPet;
-                case Status.IsCasting: return WoW.PlayerIsCasting;
-                case Status.IsChanneling: return WoW.PlayerIsChanneling;
-                case Status.IsMoving: return WoW.PlayerIsMoving;
-                case Status.TargetFriend: return WoW.TargetIsFriend;
-                case Status.TargetVisible: return WoW.TargetIsVisible;
-                default: return false;
-            }
-        }
-
-        private static bool HasSet(Bonus set)
-        {
-            switch (set)
-            {
-                case Bonus.T19Two: return WoW.SetBonus(19) >= 2;
-                case Bonus.T19Four: return WoW.SetBonus(19) >= 4;
-                case Bonus.T20Two: return WoW.SetBonus(20) >= 2;
-                case Bonus.T20Four: return WoW.SetBonus(20) >= 4;
-                case Bonus.T21Two: return WoW.SetBonus(21) >= 2;
-                case Bonus.T21Four: return WoW.SetBonus(21) >= 4;
-
-                default:
-                    return false;
-            }
+            get { return Convert.ToSingle(150f / (1 + (WoW.PlayerHastePercent / 100f))) > 75f ? Convert.ToSingle(150f / (1 + (WoW.PlayerHastePercent / 100f))) /100 : 75f / 100; }
         }
 
         private static float EnergyRegen
         {
-            get { return Convert.ToSingle(10f + 10f * (WoW.PlayerHastePercent / 100f)) * (1f + (0.10f * Convert.ToSingle(HasTalent(Talent.Ascension)))); }
+            get { return Convert.ToSingle(10f + 10f * (WoW.PlayerHastePercent / 100f)) * (1f + (0.10f * Convert.ToSingle(WoW.IsTalentAvailable("Ascension")))); }
         }
 
         private static int EnergyDeficit
         {
-            get { return (140 - Power(Unit.Energy)); }
+            get { return (100 + (20 * Convert.ToInt32(WoW.IsTalentAvailable("Ascension"))) - WoW.CurrentEnergy); }
         }
 
         private static float TimeToMaxEnergy
@@ -549,8 +174,9 @@ namespace Pixie.Rotation
 
         private static int MaxChi
         {
-            get { return (5 + Convert.ToInt32(HasTalent(Talent.Ascension))); }
+            get { return (5 + Convert.ToInt32(WoW.IsTalentAvailable("Ascension"))); }
         }
+
 
         private static readonly Stopwatch CombatTimer = new Stopwatch();
         //private static TimeSpan CombatTS = CombatTimer.Elapsed;
@@ -558,12 +184,7 @@ namespace Pixie.Rotation
         {
             get { return CombatTimer.Elapsed.TotalSeconds; }
         }
-		
-		private static bool _TPLastSpell;
-        private static bool _BOKLastSpell;
 
-
-        #endregion
 
         #endregion
 
@@ -573,44 +194,7 @@ namespace Pixie.Rotation
 
         public void CDRotation()
         {
-            Log.Write("CD Rotation", Color.Green);
-            //actions.cd = invoke_xuen_the_white_tiger
-            if (SpellCast("InvokeXuentheWhiteTiger", HasTalent(Talent.InvokeXuentheWhiteTiger))) return;
-            //actions.cd +=/ use_item,name = specter_of_betrayal,if= (cooldown.serenity.remains > 10 | buff.serenity.up) | !talent.serenity.enabled
-            //actions.cd +=/ use_item,name = vial_of_ceaseless_toxins,if= (buff.serenity.up & !equipped.specter_of_betrayal) | (equipped.specter_of_betrayal & (time < 5 | cooldown.serenity.remains <= 8)) | !talent.serenity.enabled | target.time_to_die <= cooldown.serenity.remains
-            //actions.cd +=/ blood_fury
-            //actions.cd +=/ berserking
-            //actions.cd +=/ touch_of_death,cycle_targets = 1,max_cycle_targets = 2,if= !artifact.gale_burst.enabled & equipped.hidden_masters_forbidden_touch & !prev_gcd.1.touch_of_death
-            //actions.cd +=/ touch_of_death,if= !artifact.gale_burst.enabled & !equipped.hidden_masters_forbidden_touch
-            //actions.cd +=/ touch_of_death,cycle_targets = 1,max_cycle_targets = 2,if= artifact.gale_burst.enabled & ((talent.serenity.enabled & cooldown.serenity.remains <= 1) | chi >= 2) & (cooldown.strike_of_the_windlord.remains < 8 | cooldown.fists_of_fury.remains <= 4) & cooldown.rising_sun_kick.remains < 7 & !prev_gcd.1.touch_of_death
-            if (SpellCast("TouchofDeath", (((HasTalent(Talent.Serenity) && SpellCD(Spells.Serenity) <= 1) || Power(Unit.Chi) >= 2) && (SpellCD(Spells.StrikeoftheWindlord) < 8 || SpellCD(Spells.FistsofFury) <= 4) && SpellCD(Spells.RisingSunKick) < 7 && WoW.PlayerLastSpellCastedID != 115080 && !HasAura(Auras.TouchofDeath)))) return;
-        }
 
-        #endregion
-
-        #region SEFRotation
-
-        public void SEFRotation()
-        {
-            Log.Write("SEF Rotation", Color.Green);
-            Log.Write("_TPLastSpell: " + _TPLastSpell, Color.Orange);
-            Log.Write("Energy: " + Power(Unit.Energy), Color.Orange);
-            Log.Write("Chi: " + Power(Unit.Chi), Color.Orange);
-            //actions.sef = tiger_palm,cycle_targets = 1,if= !prev_gcd.1.tiger_palm & energy = energy.max & chi < 1
-            if (SpellCast("TigerPalm", ( !_TPLastSpell && Power(Unit.Energy) >= 110 && Power(Unit.Chi) < 1))) return;
-            //actions.sef +=/ call_action_list,name = cd
-            CDRotation();
-            //actions.sef +=/ storm_earth_and_fire,if= !buff.storm_earth_and_fire.up
-            //Log.Write("Strike of the Windlord CD: " + SpellCD(Spells.StrikeoftheWindlord), Color.Orange);
-            //Log.Write("Fists of Fury CD: " + SpellCD(Spells.FistsofFury), Color.Orange);
-            //Log.Write("Rising Sun Kick CD: " + SpellCD(Spells.RisingSunKick), Color.Orange);
-            //Log.Write("Player Last Spell Casted ID: " + WoW.PlayerLastSpellCastedID, Color.Orange);
-            //Log.Write("Has Aura Touch of Death: " + HasAura(Auras.TouchofDeath), Color.Orange);
-            //Log.Write("Chi: " + Power(Unit.Chi), Color.Orange);
-            Log.Write("Touch of Death CD: " + SpellCD(Spells.TouchofDeath), Color.Red);
-            if (SpellCast("StormEarthandFire", (!HasTalent(Talent.Serenity) && !HasAura(Auras.StormEarthandFire) && SpellCD(Spells.TouchofDeath) >= 5))) return;
-            //actions.sef +=/ call_action_list,name = st
-            STRotation();
         }
 
         #endregion
@@ -619,37 +203,10 @@ namespace Pixie.Rotation
 
         public void SerenityRotation()
         {
-            //actions.serenity = tiger_palm,cycle_targets = 1,if= !prev_gcd.1.tiger_palm & energy = energy.max & chi < 1 & !buff.serenity.up
-            //actions.serenity +=/ call_action_list,name = cd
-            //actions.serenity +=/ serenity
-            //actions.serenity +=/ rising_sun_kick,cycle_targets = 1,if= active_enemies < 3
-            //actions.serenity +=/ strike_of_the_windlord
-            //actions.serenity +=/ blackout_kick,cycle_targets = 1,if= (!prev_gcd.1.blackout_kick)&(prev_gcd.1.strike_of_the_windlord | prev_gcd.1.fists_of_fury)&active_enemies < 2
-            //actions.serenity +=/ fists_of_fury,if= ((equipped.drinking_horn_cover & buff.pressure_point.remains <= 2 & set_bonus.tier20_4pc) & (cooldown.rising_sun_kick.remains > 1 | active_enemies > 1)),interrupt = 1
-            //actions.serenity +=/ fists_of_fury,if= ((!equipped.drinking_horn_cover | buff.bloodlust.up | buff.serenity.remains < 1) & (cooldown.rising_sun_kick.remains > 1 | active_enemies > 1)),interrupt = 1
-            //actions.serenity +=/ spinning_crane_kick,if= active_enemies >= 3 & !prev_gcd.1.spinning_crane_kick
-            //actions.serenity +=/ rushing_jade_wind,if= !prev_gcd.1.rushing_jade_wind & buff.rushing_jade_wind.down & buff.serenity.remains >= 4
-            //actions.serenity +=/ rising_sun_kick,cycle_targets = 1,if= active_enemies >= 3
-            //actions.serenity +=/ rushing_jade_wind,if= !prev_gcd.1.rushing_jade_wind & buff.rushing_jade_wind.down & active_enemies > 1
-            //actions.serenity +=/ spinning_crane_kick,if= !prev_gcd.1.spinning_crane_kick
-            //actions.serenity +=/ blackout_kick,cycle_targets = 1,if= !prev_gcd.1.blackout_kick
         }
 
         #endregion
 
-        #region Serenity_OpenerRotation
-
-        public void Serenity_OpenerRotation()
-        {
-            //actions.serenity_opener = tiger_palm,cycle_targets = 1,if= !prev_gcd.1.tiger_palm & energy = energy.max & chi < 1 & !buff.serenity.up & cooldown.fists_of_fury.remains <= 0
-            //actions.serenity_opener +=/ arcane_torrent,if= chi.max - chi >= 1 & energy.time_to_max >= 0.5
-            //actions.serenity_opener +=/ call_action_list,name = cd,if= cooldown.fists_of_fury.remains > 1
-            //actions.serenity_opener +=/ serenity,if= cooldown.fists_of_fury.remains > 1
-            //actions.serenity_opener +=/ rising_sun_kick,cycle_targets = 1,if= active_enemies < 3 & buff.serenity.up
-            //actions.serenity_opener +=/ strike_of_the_windlord,if= buff.serenity.up
-            //actions.serenity_opener +=/ blackout_kick,cycle_targets = 1,if= (!prev_gcd.1.blackout_kick)&(prev_gcd.1.strike_of_the_windlord)
-            //actions.serenity_opener +=/ fists_of_fury,if= cooldown.rising_sun_kick.remains > 1 | buff.serenity.down,interrupt = 1
-        }
 
         #endregion
 
@@ -657,94 +214,80 @@ namespace Pixie.Rotation
 
         public void STRotation()
         {
-            Log.Write("ST Rotation", Color.Green);
-            Log.Write("SEF CD: " + SpellCD(Spells.StormEarthandFire), Color.Blue);
-            CDRotation();
-            if (WoW.CanCast("EnergizingElixir") && (HasTalent(Talent.EnergizingElixir) &&
-                                                    !Player(Status.IsChanneling) && Power(Unit.Chi) <= 1 &&
-                                                    (SpellCD(Spells.RisingSunKick) == 0 ||
-                                                     SpellCD(Spells.StrikeoftheWindlord) == 0 ||
-                                                     Power(Unit.Energy) < 50) &&
-                                                    (HasAura(Auras.StormEarthandFire) ||
-                                                     SpellCD(Spells.StormEarthandFire) > 1)))
-				{
-					WoW.CastSpell ("EnergizingElixir");
-					return;
-				}
-            if (WoW.CanCast("TigerPalm") && !_TPLastSpell && TimeToMaxEnergy <= 1 && MaxChi - Power(Unit.Chi) >= 2) 
-				{
-					WoW.CastSpell ("TigerPalm");  _TPLastSpell = true; _BOKLastSpell = false;
-					return;
-				}          
-            if (WoW.CanCast("RisingSunKick") && Power(Unit.Chi) >= 2 && !Player(Status.IsChanneling) )
-				{
-					WoW.CastSpell ("RisingSunKick");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("FistsofFury") && Power(Unit.Chi) >= 3 && TimeToMaxEnergy > 2 && !Player(Status.IsChanneling))
-				{
-					WoW.CastSpell ("FistsofFury");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("WhirlingDragonPunch") && SpellCD(Spells.RisingSunKick) >= 2 && SpellCD(Spells.RisingSunKick) > 0 && HasTalent(Talent.WhirlingDragonPunch))
-				{
-					WoW.CastSpell ("WhirlingDragonPunch");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("StrikeoftheWindlord") && (Power(Unit.Chi) >= 2 ))
-				{
-					WoW.CastSpell ("StrikeoftheWindlord");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("BlackoutKick") && Power(Unit.Chi) >= 1 && !_BOKLastSpell && MaxChi - Power(Unit.Chi) >= 1 && HasSet(Bonus.T21Four) && HasAura(Auras.BlackoutKick))
-				{
-					WoW.CastSpell ("BlackoutKick");  _TPLastSpell = false; _BOKLastSpell = true;
-					return;
-				}
-            if (WoW.CanCast("SpinningCraneKick") && (Power(Unit.Chi) >= 3 && (Power(Unit.EnemyCount) >= 3 || (HasAura(Auras.BlackoutKick) && MaxChi - Power(Unit.Chi) >= 0)) && WoW.PlayerLastSpellCastedID != 101546 && HasSet(Bonus.T21Four)))
-				{
-					WoW.CastSpell ("SpinningCraneKick");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("CracklingJadeLightning") && (WoW.PlayerBuffStacks("TheEmperorsCapacitorAura") >= 18 && TimeToMaxEnergy >= 3))
-				{
-					WoW.CastSpell ("CracklingJadeLightning");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("SpinningCraneKick") && Power(Unit.Chi) >= 3 && Power(Unit.EnemyCount) >= 3 && WoW.PlayerLastSpellCastedID != 101546)
-				{
-					WoW.CastSpell ("SpinningCraneKick");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            // chi_wave,if=chi<=3&(cooldown.rising_sun_kick.remains>=5|cooldown.whirling_dragon_punch.remains>=5)&energy.time_to_max>1
-            if (WoW.CanCast("ChiWave") && Power(Unit.Chi) <= 3 && (HasTalent(Talent.ChiWave) && (SpellCD(Spells.RisingSunKick) >= 5 || SpellCD(Spells.WhirlingDragonPunch) >= 5) && TimeToMaxEnergy > 1))
-				{
-					WoW.CastSpell ("ChiWave");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("BlackoutKick") &&  !_BOKLastSpell && (Power(Unit.Chi) >= 1 || HasAura(Auras.BlackoutKick)) && SpellCD(Spells.RisingSunKick) >= 2 && SpellCD(Spells.StrikeoftheWindlord) >= 2 && (SpellCD(Spells.FistsofFury) > 1 || (SpellCD(Spells.FistsofFury) == 0 && Power(Unit.Chi) < 3 && _TPLastSpell)))
-				{
-					WoW.CastSpell ("BlackoutKick");  _TPLastSpell = false; _BOKLastSpell = true;
-					return;
-				}
-            if (WoW.CanCast("ChiBurst") && (HasTalent(Talent.ChiBurst) && TimeToMaxEnergy > 1))
-				{
-					WoW.CastSpell ("ChiBurst");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("TigerPalm")&& (Power(Unit.Energy) >= 50 && !_TPLastSpell && (MaxChi - Power(Unit.Chi) >= 2 || TimeToMaxEnergy <= 2)))
-				{
-					WoW.CastSpell ("TigerPalm");  _TPLastSpell = true; _BOKLastSpell = false;
-					return;
-				}
-            if (WoW.CanCast("ChiWave")&& HasTalent(Talent.ChiWave))
-				{
-					WoW.CastSpell ("ChiWave");  _TPLastSpell = false; _BOKLastSpell = false;
-					return;
-				}
-        }
 
-        #endregion
+            if (WoW.CanCast("TouchofDeath"))
+            {
+                WoW.CastSpell("TouchofDeath");
+                return;
+            }
+
+            if (WoW.CanCast("FistoftheWhiteTiger") && WoW.IsTalentAvailable("FistoftheWhiteTiger") && WoW.CurrentChi < 3 && TimeToMaxEnergy < CurrentGlobalCooldown)
+            {
+                WoW.CastSpell("FistoftheWhiteTiger");
+                return;
+            }
+
+            if (WoW.CanCast("TigerPalm") && WoW.CurrentChi < 4 && TimeToMaxEnergy < CurrentGlobalCooldown)
+            {
+                WoW.CastSpell("TigerPalm");
+                return;
+            }
+
+            if (WoW.CanCast("WhirlingDragonPunch") && WoW.IsTalentAvailable("WhirlingDragonPunch") && WoW.PlayerCooldownTimeRemaining("RisingSunKick") > 0 && WoW.PlayerCooldownTimeRemaining("FistsofFury") > 0)
+            {
+                WoW.CastSpell("WhirlingDragonPunch");
+                return;
+            }
+
+            if (WoW.CanCast("FistsofFury") && WoW.CurrentChi >= 3)
+            {
+                WoW.CastSpell("FistsofFury");
+                return;
+            }
+
+            if (WoW.CanCast("ChiBurst") && WoW.CurrentChi < MaxChi)
+            {
+                WoW.CastSpell("ChiBurst");
+                return;
+            }
+
+            if (WoW.CanCast("RisingSunKick") && 
+                ((WoW.IsTalentAvailable("WhirlingDragonPunch") && WoW.PlayerCooldownTimeRemaining("WhirlingDragonPunch") < (CurrentGlobalCooldown * 2) && 
+                  WoW.CurrentChi >= 2) || (WoW.CurrentChi > (2 + (3 * Convert.ToInt32(WoW.PlayerCooldownTimeRemaining("FistsofFury") < (CurrentGlobalCooldown * 2)))))))
+            {
+                WoW.CastSpell("RisingSunKick");
+                return;
+            }
+
+            if (WoW.CanCast("BlackoutKick") && 
+                (WoW.PlayerCooldownTimeRemaining("FistsofFury") > (CurrentGlobalCooldown * 2) || (WoW.CurrentChi > 3 || WoW.PlayerHasBuff("BlackoutKickAura"))) && 
+                ((WoW.IsTalentAvailable("WhirlingDragonPunch") && WoW.PlayerCooldownTimeRemaining("WhirlingDragonPunch") < (CurrentGlobalCooldown * 2) && WoW.PlayerCooldownTimeRemaining("RisingSunKick") < 1) || (WoW.CurrentChi > 2 || WoW.PlayerHasBuff("BlackoutKickAura"))) && 
+                (WoW.CurrentChi > 3 || 
+                  (WoW.CurrentChi >= 1 || WoW.PlayerHasBuff("BlackoutKickAura")) && !WoW.PlayerLastCast("BlackoutKick")))
+            {
+                WoW.CastSpell("BlackoutKick");
+                return;
+            }
+
+            if (WoW.CanCast("FistoftheWhiteTiger") && WoW.IsTalentAvailable("FistoftheWhiteTiger"))
+            {
+                WoW.CastSpell("FistoftheWhiteTiger");
+                return;
+            }
+
+            if (WoW.CanCast("ChiWave") && WoW.IsTalentAvailable("ChiWave"))
+            {
+                WoW.CastSpell("ChiWave");
+                return;
+            }
+
+            if (WoW.CanCast("TigerPalm"))
+            {
+                WoW.CastSpell("TigerPalm");
+                return;
+            }
+
+        }
 
         #endregion
 
@@ -752,7 +295,7 @@ namespace Pixie.Rotation
 
         public override void Pulse()
         {
-
+            Log.Write("Channeling: " + WoW.PlayerIsChanneling, Color.Orange);
             #region CombatTimer
             if (!WoW.PlayerIsInCombat)
             {
@@ -772,25 +315,19 @@ namespace Pixie.Rotation
             }
             #endregion
 
-            if ((Player(Status.TargetBoss) || !Player(Status.TargetBoss)) && Player(Status.InCombat) && Player(Status.TargetEnemy) && !Player(Status.IsChanneling) && WoW.IsSpellInRange("TigerPalm"))
+            if ((WoW.PlayerHasTarget || WoW.TargetIsBoss) && WoW.PlayerIsInCombat && WoW.TargetIsEnemy && !WoW.PlayerIsChanneling && WoW.IsSpellInRange("TigerPalm"))
             {
 
+                //Log.Write("Current Global Cooldown: " + CurrentGlobalCooldown, Color.Orange);
                 //Log.Write("Energy Regen: " + EnergyRegen, Color.Orange);
+                //Log.Write("Energy Deficit: " + EnergyDeficit, Color.Orange);
+                //Log.Write("Time To Max Energy: " + TimeToMaxEnergy, Color.Orange);
+                Log.Write("Energy: " + WoW.CurrentEnergy, Color.Orange);
+                Log.Write("Chi: " + WoW.CurrentChi, Color.Orange);
 
-                //actions = auto_attack
-                //actions +=/ spear_hand_strike,if= target.debuff.casting.react
-                //actions +=/ touch_of_karma,interval = 90,pct_health = 0.5
-                //actions +=/ potion,if= buff.serenity.up | buff.storm_earth_and_fire.up | (!talent.serenity.enabled & trinket.proc.agility.react) | buff.bloodlust.react | target.time_to_die <= 60
-                //actions +=/ touch_of_death,if= target.time_to_die <= 9
-                //actions +=/ call_action_list,name = serenity_opener,if= ((talent.serenity.enabled & cooldown.serenity.remains <= 0) | buff.serenity.up) & buff.bloodlust.up & active_enemies < 2 & set_bonus.tier20_4pc & set_bonus.tier19_2pc & equipped.drinking_horn_cover & (equipped.katsuos_eclipse | race.blood_elf | talent.power_strikes.enabled)
-                //actions +=/ call_action_list,name = serenity,if= (talent.serenity.enabled & cooldown.serenity.remains <= 0) | (buff.serenity.up & time > 20)
-                //actions +=/ call_action_list,name = sef,if= !talent.serenity.enabled & (buff.storm_earth_and_fire.up | cooldown.storm_earth_and_fire.charges = 2)
-                if (!HasTalent(Talent.Serenity) && (HasAura(Auras.StormEarthandFire) || SpellCD(Spells.StormEarthandFire) <= 1/* || SpellCharges(Spells.StormEarthandFire) == 2*/)) SEFRotation();
-                //actions +=/ call_action_list,name = sef,if= !talent.serenity.enabled & equipped.drinking_horn_cover & (cooldown.strike_of_the_windlord.remains <= 18 & cooldown.fists_of_fury.remains <= 12 & chi >= 3 & cooldown.rising_sun_kick.remains <= 1 | target.time_to_die <= 25 | cooldown.touch_of_death.remains > 112) & cooldown.storm_earth_and_fire.charges = 1
-                if (!HasTalent(Talent.Serenity) && HasItem(Item.DrinkingHornCover) && (SpellCD(Spells.StrikeoftheWindlord) <= 18 && SpellCD(Spells.FistsofFury) <= 12 && Power(Unit.Chi) >= 3 && SpellCD(Spells.RisingSunKick) <= 1 || SpellCD(Spells.TouchofDeath) > 112)/* && SpellCharges(Spells.StormEarthandFire) == 1*/) SEFRotation();
-                //actions +=/ call_action_list,name = sef,if= !talent.serenity.enabled & !equipped.drinking_horn_cover & (cooldown.strike_of_the_windlord.remains <= 14 & cooldown.fists_of_fury.remains <= 6 & chi >= 3 & cooldown.rising_sun_kick.remains <= 1 | target.time_to_die <= 15 | cooldown.touch_of_death.remains > 112) & cooldown.storm_earth_and_fire.charges = 1
-                if (!HasTalent(Talent.Serenity) && !HasItem(Item.DrinkingHornCover) && (SpellCD(Spells.StrikeoftheWindlord) <= 14 && SpellCD(Spells.FistsofFury) <= 6 && Power(Unit.Chi) >= 3 && SpellCD(Spells.RisingSunKick) <= 1 || SpellCD(Spells.TouchofDeath) > 112)/* && SpellCharges(Spells.StormEarthandFire) == 1*/) SEFRotation();
-                //actions +=/ call_action_list,name = st
+
+
+
                 STRotation();
             }
         }
@@ -992,18 +529,40 @@ Spell,152175,WhirlingDragonPunch,D1
 Spell,117952,CracklingJadeLightning,D3
 Spell,115098,ChiWave,D1
 Spell,123986,ChiBurst,D1
+Spell,261947,FistoftheWhiteTiger,D1
+
 Range,100780,TigerPalm,D1
 Range,117952,CracklingJadeLightning,D3
-Item,137057,HiddenMastersForbiddenTouch,D1
-Item,137097,DrinkingHornCover,D2
-Item,144239,TheEmperorsCapacitor,D3
+
 Buff,152173,SerenityAura
 Buff,137639,StormEarthandFireAura
 Buff,2825,BloodlustAura
-Buff,247255,PressurePointAura
 Buff,116847,RushingJadeWindAura
 Buff,116768,BlackoutKickAura
-Buff,235054,TheEmperorsCapacitorAura
 Buff,80353,TimeWarpAura
+
 Debuff,115080,TouchofDeathAura
+
+Talent,196607,EyeoftheTiger
+Talent,115098,ChiWave
+Talent,123986,ChiBurst
+Talent,115173,Celerity
+Talent,115008,ChiTorpedo
+Talent,116841,Tigerslust
+Talent,115396,Ascension
+Talent,261947,FistoftheWhiteTiger
+Talent,115288,EnergizingElixir
+Talent,264348,TigerTailSweep
+Talent,280195,GoodKarma
+Talent,116844,RingofPeace
+Talent,261767,InnerStrength
+Talent,122783,DiffuseMagic
+Talent,122278,DampenHarm
+Talent,196740,HitCombo
+Talent,261715,RushingJadeWind
+Talent,123904,InvokeXuentheWhiteTiger
+Talent,280197,SpiritualFocus
+Talent,152175,WhirlingDragonPunch
+Talent,152173,Serenity
+
 */
