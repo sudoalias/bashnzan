@@ -154,7 +154,7 @@ namespace Nerdz.Rotation
 
         private static float CurrentGlobalCooldown
         {
-            get { return Convert.ToSingle(150f / (1 + (WoW.PlayerHastePercent / 100f))) > 75f ? Convert.ToSingle(150f / (1 + (WoW.PlayerHastePercent / 100f))) /100 : 75f / 100; }
+            get { return Convert.ToSingle(100f / (1 + (WoW.PlayerHastePercent / 100f))) > 75f ? Convert.ToSingle(100f / (1 + (WoW.PlayerHastePercent / 100f))) /100 : 75f / 100; }
         }
 
         private static float EnergyRegen
@@ -177,6 +177,10 @@ namespace Nerdz.Rotation
             get { return (5 + Convert.ToInt32(WoW.IsTalentAvailable("Ascension"))); }
         }
 
+        private static int EnemyCount
+        {
+            get { return WoW.EnemyCount(); }
+        }
 
         private static readonly Stopwatch CombatTimer = new Stopwatch();
         //private static TimeSpan CombatTS = CombatTimer.Elapsed;
@@ -221,13 +225,25 @@ namespace Nerdz.Rotation
                 return;
             }
 
-            if (WoW.CanCast("FistoftheWhiteTiger") && WoW.IsTalentAvailable("FistoftheWhiteTiger") && WoW.CurrentChi < 3 && TimeToMaxEnergy < CurrentGlobalCooldown)
+            if (WoW.CanCast("RushingJadeWind") && WoW.IsTalentAvailable("RushingJadeWind") && !WoW.PlayerHasPermaBuff("RushingJadeWindAura") && EnemyCount >= 2)
+            {
+                WoW.CastSpell("RushingJadeWind");
+                return;
+            }
+
+            if  (WoW.PlayerHasPermaBuff("RushingJadeWindAura") && EnemyCount < 2)
+            {
+                WoW.CastSpell("RushingJadeWind");
+                return;
+            }
+
+            if (WoW.CanCast("FistoftheWhiteTiger") && WoW.IsTalentAvailable("FistoftheWhiteTiger") && WoW.CurrentChi < 3 && TimeToMaxEnergy < CurrentGlobalCooldown && EnemyCount < 3)
             {
                 WoW.CastSpell("FistoftheWhiteTiger");
                 return;
             }
 
-            if (WoW.CanCast("TigerPalm") && WoW.CurrentChi < 4 && TimeToMaxEnergy < CurrentGlobalCooldown)
+            if (WoW.CanCast("TigerPalm") && WoW.CurrentChi < 4 && TimeToMaxEnergy < CurrentGlobalCooldown && EnemyCount < 3)
             {
                 WoW.CastSpell("TigerPalm");
                 return;
@@ -251,11 +267,17 @@ namespace Nerdz.Rotation
                 return;
             }
 
-            if (WoW.CanCast("RisingSunKick") && 
+            if (WoW.CanCast("RisingSunKick") && EnemyCount < 3 &&
                 ((WoW.IsTalentAvailable("WhirlingDragonPunch") && WoW.PlayerCooldownTimeRemaining("WhirlingDragonPunch") < (CurrentGlobalCooldown * 2) && 
                   WoW.CurrentChi >= 2) || (WoW.CurrentChi > (2 + (3 * Convert.ToInt32(WoW.PlayerCooldownTimeRemaining("FistsofFury") < (CurrentGlobalCooldown * 2)))))))
             {
                 WoW.CastSpell("RisingSunKick");
+                return;
+            }
+
+            if (WoW.CanCast("SpinningCraneKick") && EnemyCount >= 3 && WoW.CurrentChi >= 3)
+            {
+                WoW.CastSpell("SpinningCraneKick");
                 return;
             }
 
@@ -266,6 +288,14 @@ namespace Nerdz.Rotation
                   (WoW.CurrentChi >= 1 || WoW.PlayerHasBuff("BlackoutKickAura")) && !WoW.PlayerLastCast("BlackoutKick")))
             {
                 WoW.CastSpell("BlackoutKick");
+                return;
+            }
+
+            if (WoW.CanCast("RisingSunKick") && EnemyCount >= 3 &&
+                ((WoW.IsTalentAvailable("WhirlingDragonPunch") && WoW.PlayerCooldownTimeRemaining("WhirlingDragonPunch") < (CurrentGlobalCooldown * 2) &&
+                                    WoW.CurrentChi >= 2) || (WoW.CurrentChi > (2 + (3 * Convert.ToInt32(WoW.PlayerCooldownTimeRemaining("FistsofFury") < (CurrentGlobalCooldown * 2)))))))
+            {
+                WoW.CastSpell("RisingSunKick");
                 return;
             }
 
@@ -289,13 +319,14 @@ namespace Nerdz.Rotation
 
         }
 
+
         #endregion
 
         #region Combat Pulse
 
         public override void Pulse()
         {
-            Log.Write("Channeling: " + WoW.PlayerIsChanneling, Color.Orange);
+            //Log.Write("Channeling: " + WoW.PlayerIsChanneling, Color.Orange);
             #region CombatTimer
             if (!WoW.PlayerIsInCombat)
             {
@@ -324,8 +355,7 @@ namespace Nerdz.Rotation
                 //Log.Write("Time To Max Energy: " + TimeToMaxEnergy, Color.Orange);
                 Log.Write("Energy: " + WoW.CurrentEnergy, Color.Orange);
                 Log.Write("Chi: " + WoW.CurrentChi, Color.Orange);
-
-
+                Log.Write("Enemy Count: " + EnemyCount, Color.Orange);
 
 
                 STRotation();
@@ -523,7 +553,7 @@ Spell,205320,StrikeoftheWindlord,D1
 Spell,100784,BlackoutKick,D1
 Spell,113656,FistsofFury,D1
 Spell,101546,SpinningCraneKick,D1
-Spell,116847,RushingJadeWind,D1
+Spell,261715,RushingJadeWind,D1
 Spell,115288,EnergizingElixir,D1
 Spell,152175,WhirlingDragonPunch,D1
 Spell,117952,CracklingJadeLightning,D3
@@ -537,7 +567,7 @@ Range,117952,CracklingJadeLightning,D3
 Buff,152173,SerenityAura
 Buff,137639,StormEarthandFireAura
 Buff,2825,BloodlustAura
-Buff,116847,RushingJadeWindAura
+Buff,261715,RushingJadeWindAura
 Buff,116768,BlackoutKickAura
 Buff,80353,TimeWarpAura
 
