@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Nerdz.Rotation
 {
@@ -25,7 +26,7 @@ namespace Nerdz.Rotation
         }
 
         public override Form SettingsForm { get; set; }
-
+        public override string AoERangeValue { get { return "8"; } }
         public override void Initialize()
         {
             WriteLogging();
@@ -36,7 +37,6 @@ namespace Nerdz.Rotation
             BuildInterface();
         }
 
-        private static bool _ForceAoE;
         private static readonly string _versionnumber = "4.0.2 (7.3.0) Return to CS";
         private FelFuryInterface Interface { get; set; }
 
@@ -159,87 +159,7 @@ namespace Nerdz.Rotation
 
 
         #endregion
-
-        public static void AoECheck()
-        {
-            short key = WoW.GetAsyncKeyState(Keys.NumPad2);
-            if ((key & 0x8000) != 0)
-            {
-                _ForceAoE = true;
-            }
-
-            else
-            {
-                _ForceAoE = false;
-            }
-        }
-
-        #region Rotation
-
-        #region CDRotation
-
-        public void CDRotation()
-        {
-
-        }
-
-        #endregion
-
-       #region DemonicRotation
-
-        public void DemonicRotation()
-        {
-            if (WoW.CanCast("FelBarrage") && WoW.IsTalentAvailable("FelBarrage") && _ForceAoE /*WoW.CurrentEnemyUnitCount >= 3*/)
-            {
-                WoW.CastSpell("FelBarrage");
-                return;
-            }
-            if (WoW.CanCast("DeathSweep") && WoW.PlayerHasBuff("MetamorphosisAura") && WoW.CurrentFury >= 15 && (WoW.IsTalentAvailable("FirstBlood") || _ForceAoE /*WoW.CurrentEnemyUnitCount >= 3*/))
-            {
-                WoW.CastSpell("DeathSweep");
-                return;
-            }
-            if (WoW.CanCast("BladeDance") && WoW.CurrentFury >= 15 && WoW.PlayerCooldownTimeRemaining("EyeBeam") > 5 && (WoW.IsTalentAvailable("FirstBlood") || _ForceAoE /*WoW.CurrentEnemyUnitCount >= 3*/))
-            {
-                WoW.CastSpell("BladeDance");
-                return;
-            }
-            if (WoW.CanCast("ImmolationAura"))
-            {
-                WoW.CastSpell("ImmolationAura");
-                return;
-            }
-            if (WoW.CanCast("Felblade") && WoW.IsTalentAvailable("Felblade") && WoW.CurrentFury <= 80)
-            {
-                WoW.CastSpell("Felblade");
-                return;
-            }
-            if (WoW.CanCast("EyeBeam") && WoW.CurrentFury >= 30)
-            {
-                WoW.CastSpell("EyeBeam");
-                return;
-            }
-            if (WoW.CanCast("Annihilation") && WoW.PlayerHasBuff("MetamorphosisAura") && WoW.CurrentFury >= 40)
-            {
-                WoW.CastSpell("Annihilation");
-                return;
-            }
-            if (WoW.CanCast("ChaosStrike") && WoW.CurrentFury >= 40)
-            {
-                WoW.CastSpell("ChaosStrike");
-                return;
-            }
-            if (WoW.CanCast("DemonsBite") && !WoW.IsTalentAvailable("DemonBlades"))
-            {
-                WoW.CastSpell("DemonsBite");
-                return;
-            }
-        }
-
-        #endregion
-
-        #endregion
-
+        
         #region Combat Pulse
 
         public override void Pulse()
@@ -263,13 +183,257 @@ namespace Nerdz.Rotation
                 }
             }
             #endregion
-            AoECheck();
-            if ((WoW.PlayerHasTarget || WoW.TargetIsBoss) && WoW.PlayerIsInCombat && WoW.TargetIsEnemy && !WoW.PlayerIsChanneling && WoW.IsSpellInRange("ChaosStrike"))
+
+            if ((WoW.PlayerHasTarget || WoW.TargetIsBoss) && WoW.PlayerIsInCombat && WoW.TargetIsEnemy && !WoW.PlayerIsChanneling)
             {
+                //Log.Write("Fury: " + WoW.CurrentFury, Color.Orange);
+                //Log.Write("Enemies: " + WoW.EnemyCount, Color.Red);
 
-                //Log.Write("Energy Regen: " + EnergyRegen, Color.Orange);
+                #region Momentum Rotation
+                if (WoW.IsTalentAvailable("Momentum"))
+                {
+                    //Fel Rush if you have 2 charges of  Fel Rush ready.
+                    if (WoW.CanCast("FelRush") && ((WoW.GetAsyncKeyState(Keys.Add) & 0x8000) != 0))
+                    {
+                        WoW.CastSpell("FelRush");
+                        return;
+                    }
+                    if (WoW.CanCast("FelRush") && WoW.PlayerLastCast("VengefulRetreat"))
+                    {
+                        WoW.CastSpell("FelRush");
+                        return;
+                    }
+                    if (WoW.IsSpellInRange("ChaosStrike"))
+                    {
+                        //Vengeful Retreat
+                        if (WoW.CanCast("VengefulRetreat") && ((WoW.GetAsyncKeyState(Keys.Subtract) & 0x8000) != 0))
+                        {
+                            WoW.CastSpell("VengefulRetreat");
+                            Thread.Sleep(300);
+                            return;
+                        }
+                        //Fel Barrage if  Momentum is active, consider holding the cooldown for incoming adds in the near future.
+                        if (WoW.CanCast("FelBarrage") && WoW.IsTalentAvailable("FelBarrage") && WoW.EnemyCount >= 3 &&
+                            WoW.PlayerHasBuff("MomentumAura"))
+                        {
+                            WoW.CastSpell("FelBarrage");
+                            return;
+                        }
 
-                if (WoW.IsTalentAvailable("Demonic")) DemonicRotation();
+                        //Immolation Aura if talented.
+                        if (WoW.CanCast("ImmolationAura"))
+                        {
+                            WoW.CastSpell("ImmolationAura");
+                            return;
+                        }
+
+                        //Eye Beam if  Momentum is active.
+                        if (WoW.CanCast("EyeBeam") && WoW.CurrentFury >= 30 && WoW.PlayerHasBuff("MomentumAura"))
+                        {
+                            WoW.CastSpell("EyeBeam");
+                            return;
+                        }
+
+                        //Death Sweep if  First Blood is talented or  Death Sweep will hit 2 + targets while  Trail of Ruin is talented.
+                        if (WoW.CanCast("DeathSweep") && WoW.PlayerHasBuff("MetamorphosisAura") &&
+                            WoW.CurrentFury >= 15 && (WoW.IsTalentAvailable("FirstBlood") ||
+                                                      (WoW.EnemyCount >= 2 && WoW.IsTalentAvailable("TrailofRuin"))))
+                        {
+                            WoW.CastSpell("DeathSweep");
+                            return;
+                        }
+
+                        //Blade Dance if  First Blood is talented or  Blade Dance will hit 2 + targets while  Trail of Ruin is talented.
+                        if (WoW.CanCast("BladeDance") && WoW.CurrentFury >= 15 &&
+                            (WoW.IsTalentAvailable("FirstBlood") ||
+                             (WoW.EnemyCount >= 2 && WoW.IsTalentAvailable("TrailofRuin"))))
+                        {
+                            WoW.CastSpell("BladeDance");
+                            return;
+                        }
+
+                        //Felblade if fury is < than 40.
+                        if (WoW.CanCast("Felblade") && WoW.IsTalentAvailable("Felblade") && WoW.CurrentFury <= 40)
+                        {
+                            WoW.CastSpell("Felblade");
+                            return;
+                        }
+
+                        //Eye Beam if  Blind Fury is not talented and Dark Slash is not talented and if  First Blood is talented your fury is >= 45.
+                        if (WoW.CanCast("EyeBeam") && WoW.CurrentFury >= 45 && !WoW.IsTalentAvailable("BlindFury") &&
+                            !WoW.IsTalentAvailable("DarkSlash") && WoW.IsTalentAvailable("FirstBlood"))
+                        {
+                            WoW.CastSpell("EyeBeam");
+                            return;
+                        }
+
+                        //Annihilation if (Demon Blades is talented or fury deficit< 30 or the  Metamorphosis buff remaining time is < than 5 seconds ) and if  First Blood is talented your fury is >= 55.
+                        if (WoW.CanCast("Annihilation") && WoW.PlayerHasBuff("MetamorphosisAura") &&
+                            WoW.CurrentFury >= 40 &&
+                            (WoW.IsTalentAvailable("DemonBlades") || WoW.CurrentFury > 90 ||
+                             WoW.PlayerBuffTimeRemaining("Metamorphosis") < 5) &&
+                            (!WoW.IsTalentAvailable("FirstBlood") ||
+                             (WoW.IsTalentAvailable("FirstBlood") && WoW.CurrentFury >= 55)))
+                        {
+                            WoW.CastSpell("Annihilation");
+                            return;
+                        }
+
+                        //Chaos Strike if (Demon Blades is talented or fury deficit< 30 or the cooldown remaing on Metamorphosis is > than 6 seconds ) and if  First Blood is talented your fury is >= 55.
+                        if (WoW.CanCast("ChaosStrike") && WoW.CurrentFury >= 40 &&
+                            (WoW.IsTalentAvailable("DemonBlades") || WoW.CurrentFury > 90 ||
+                             WoW.PlayerCooldownTimeRemaining("Metamorphosis") > 6) &&
+                            (!WoW.IsTalentAvailable("FirstBlood") ||
+                             (WoW.IsTalentAvailable("FirstBlood") && WoW.CurrentFury >= 55)))
+                        {
+                            WoW.CastSpell("ChaosStrike");
+                            return;
+                        }
+
+                        //Eye Beam if talented into Blind Fury.
+                        if (WoW.CanCast("EyeBeam") && WoW.CurrentFury >= 45 && WoW.IsTalentAvailable("BlindFury"))
+                        {
+                            WoW.CastSpell("EyeBeam");
+                            return;
+                        }
+
+                        //Demon's Bite.
+                        if (WoW.CanCast("DemonsBite") && !WoW.IsTalentAvailable("DemonBlades"))
+                        {
+                            WoW.CastSpell("DemonsBite");
+                            return;
+                        }
+
+                        //Felblade.
+                        if (WoW.CanCast("Felblade") && WoW.IsTalentAvailable("Felblade"))
+                        {
+                            WoW.CastSpell("Felblade");
+                            return;
+                        }
+
+                        //Throw Glaive if you will be out of range for the full duration of the next global cooldown or if you are talented into Demon Blades and nothing else is available.
+                        if (WoW.CanCast("ThrowGlaive"))
+                        {
+                            WoW.CastSpell("ThrowGlaive");
+                            return;
+                        }
+
+                    }
+                }
+
+                #endregion
+
+                #region DemonicRotation
+
+                if (WoW.IsTalentAvailable("Demonic") && WoW.IsSpellInRange("ChaosStrike"))
+                {
+                    if (WoW.CanCast("FelBarrage") && WoW.IsTalentAvailable("FelBarrage") && WoW.EnemyCount >= 3)
+                    {
+                        WoW.CastSpell("FelBarrage");
+                        return;
+                    }
+                    if (WoW.CanCast("DeathSweep") && WoW.PlayerHasBuff("MetamorphosisAura") && WoW.CurrentFury >= 15 && (WoW.IsTalentAvailable("FirstBlood") || WoW.EnemyCount >= 3))
+                    {
+                        WoW.CastSpell("DeathSweep");
+                        return;
+                    }
+                    if (WoW.CanCast("BladeDance") && WoW.CurrentFury >= 15 && WoW.PlayerCooldownTimeRemaining("EyeBeam") > 5 && (WoW.IsTalentAvailable("FirstBlood") || WoW.EnemyCount >= 3))
+                    {
+                        WoW.CastSpell("BladeDance");
+                        return;
+                    }
+                    if (WoW.CanCast("ImmolationAura") && WoW.IsTalentAvailable("ImmolationAura"))
+                    {
+                        WoW.CastSpell("ImmolationAura");
+                        return;
+                    }
+                    if (WoW.CanCast("Felblade") && WoW.IsTalentAvailable("Felblade") && WoW.CurrentFury <= 80)
+                    {
+                        WoW.CastSpell("Felblade");
+                        return;
+                    }
+                    if (WoW.CanCast("EyeBeam") && WoW.CurrentFury >= 30)
+                    {
+                        WoW.CastSpell("EyeBeam");
+                        return;
+                    }
+                    if (WoW.CanCast("Annihilation") && WoW.PlayerHasBuff("MetamorphosisAura") && WoW.CurrentFury >= 40)
+                    {
+                        WoW.CastSpell("Annihilation");
+                        return;
+                    }
+                    if (WoW.CanCast("ChaosStrike") && WoW.CurrentFury >= 40)
+                    {
+                        WoW.CastSpell("ChaosStrike");
+                        return;
+                    }
+                    if (WoW.CanCast("DemonsBite") && !WoW.IsTalentAvailable("DemonBlades"))
+                    {
+                        WoW.CastSpell("DemonsBite");
+                        return;
+                    }
+                }
+
+                #endregion
+
+
+                #region NemesisRotation
+
+                if (WoW.IsTalentAvailable("Nemesis") && WoW.IsSpellInRange("ChaosStrike"))
+                {
+
+                    //Cast Nemesis Icon Nemesis on your primary target.
+                    if (WoW.CanCast("Nemesis"))
+                    {
+                        WoW.CastSpell("Nemesis");
+                    }
+                    //Cast Metamorphosis Icon Metamorphosis if available and not active.
+                    //Cast Immolation Aura Icon Immolation Aura.
+                    if (WoW.CanCast("ImmolationAura") && WoW.IsTalentAvailable("ImmolationAura"))
+                    {
+                        WoW.CastSpell("ImmolationAura");
+                        return;
+                    }
+                    //Cast Blade Dance Icon Blade Dance / Death Sweep Icon Death Sweep.
+                    if (WoW.CanCast("DeathSweep") && WoW.PlayerHasBuff("MetamorphosisAura") && WoW.CurrentFury >= 15 && (WoW.IsTalentAvailable("FirstBlood") || WoW.EnemyCount >= 3))
+                    {
+                        WoW.CastSpell("DeathSweep");
+                        return;
+                    }
+                    if (WoW.CanCast("BladeDance") && WoW.CurrentFury >= 15 && (WoW.IsTalentAvailable("FirstBlood") || WoW.EnemyCount >= 3))
+                    {
+                        WoW.CastSpell("BladeDance");
+                        return;
+                    }
+                    //Cast Eye Beam Icon Eye Beam.
+                    if (WoW.CanCast("EyeBeam") && WoW.CurrentFury >= 30)
+                    {
+                        WoW.CastSpell("EyeBeam");
+                        return;
+                    }
+                    //Cast Chaos Strike Icon Chaos Strike / Annihilation Icon Annihilation.
+                    if (WoW.CanCast("Annihilation") && WoW.PlayerHasBuff("MetamorphosisAura") && WoW.CurrentFury >= 40)
+                    {
+                        WoW.CastSpell("Annihilation");
+                        return;
+                    }
+                    if (WoW.CanCast("ChaosStrike") && WoW.CurrentFury >= 40)
+                    {
+                        WoW.CastSpell("ChaosStrike");
+                        return;
+                    }
+                    //Cast Demon's Bite Icon Demon's Bite to generate Fury.
+                    if (WoW.CanCast("DemonsBite") && !WoW.IsTalentAvailable("DemonBlades"))
+                    {
+                        WoW.CastSpell("DemonsBite");
+                        return;
+                    }
+
+                }
+
+                #endregion
+
+
             }
         }
 
@@ -465,8 +629,14 @@ Spell,195072,FelRush,D1
 Spell,162243,DemonsBite,D1
 Spell,185123,ThrowGlaive,D1
 Spell,191427,Metamorphosis,D1
+Spell,206491,Nemesis,D1
+Spell,198793,VengefulRetreat,
 
-Range,162794,ChaosStrike,D1
+Range,162794,ChaosStrike
+
+GCD,162794,ChaosStrike
+
+Charge,195072,FelRush
 
 Buff,258920,ImmolationAuraAura
 Buff,162264,MetamorphosisAura
@@ -480,4 +650,11 @@ Talent,258925,FelBarrage
 Talent,206416,FirstBlood
 Talent,232893,Felblade
 Talent,203555,DemonBlades
+Talent,258920,ImmolationAura
+Talent,206491,Nemesis
+Talent,206476,Momentum
+Talent,258881,TrailofRuin
+Talent,258860,DarkSlash
+Talent,21854,BlindFury
+
 */
