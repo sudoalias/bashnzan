@@ -25,7 +25,7 @@ namespace Nerdz.Rotation
         }
 
         public override Form SettingsForm { get; set; }
-
+        public override string AoERangeValue { get { return "8"; } }
         public override void Initialize()
         {
             WriteLogging();
@@ -541,6 +541,9 @@ AddonAuthor=Bash
 AddonName=HASHTAGPWNAGE
 WoWVersion=Legion - 70200
 [SpellBook.db]
+
+GCD,100780,TigerPalm
+
 Spell,122470,TouchofKarma,D1
 Spell,115080,TouchofDeath,D1
 Spell,123904,InvokeXuentheWhiteTiger,D1

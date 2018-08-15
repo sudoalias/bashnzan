@@ -221,7 +221,7 @@ namespace Nerdz.Rotation
                         }
 
                         //Immolation Aura if talented.
-                        if (WoW.CanCast("ImmolationAura"))
+                        if (WoW.CanCast("ImmolationAura") && WoW.IsTalentAvailable("ImmolationAura"))
                         {
                             WoW.CastSpell("ImmolationAura");
                             return;

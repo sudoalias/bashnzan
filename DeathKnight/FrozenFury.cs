@@ -25,7 +25,7 @@ namespace Nerdz.Rotation
         }
 
         public override Form SettingsForm { get; set; }
-
+        public override string AoERangeValue { get { return "8"; } }
         public override void Initialize()
         {
             WriteLogging();
@@ -157,11 +157,6 @@ namespace Nerdz.Rotation
             get { return Convert.ToSingle(150f / (1 + (WoW.PlayerHastePercent / 150f))) > 75f ? Convert.ToSingle(150f / (1 + (WoW.PlayerHastePercent / 150f))) /100 : 75f / 100; }
         }
 
-        private static int EnemyCount
-        {
-            get { return WoW.EnemyCount(); }
-        }
-
         private static readonly Stopwatch CombatTimer = new Stopwatch();
         //private static TimeSpan CombatTS = CombatTimer.Elapsed;
         private static double CombatSec
@@ -266,7 +261,7 @@ namespace Nerdz.Rotation
                     //Rotation outside Breath of Sindragosa
                     if (!WoW.PlayerHasPermaBuff("BreathofSindragosa"))
                     {
-                        if (EnemyCount == 1)
+                        if (WoW.EnemyCount == 1)
                         {
                             //Frost Strike if specced into Icy Talons and your stacks of Icy Talons are within 1 GCD of falling off.
                             if (WoW.CanCast("FrostStrike") && WoW.IsTalentAvailable("IcyTalons") && WoW.PlayerBuffTimeRemaining("IcyTalons") <= CurrentGlobalCooldown && WoW.CurrentRunicPower >= 25)
@@ -334,7 +329,7 @@ namespace Nerdz.Rotation
                             }
                         }
 
-                        if (EnemyCount >= 2)
+                        if (WoW.EnemyCount >= 2)
                         {
                             //Glacial Advance if specced into Icy Talons and your stacks of Icy Talons are within 1 GCD of falling off. Use Frost Strike if you haven't specced into  Glacial Advance or if you have between 25 and 30 Runic Power.
                             if (WoW.CanCast("GlacialAdvance") && WoW.IsTalentAvailable("GlacialAdvance") && WoW.IsTalentAvailable("IcyTalons") && WoW.PlayerBuffTimeRemaining("IcyTalons") <= CurrentGlobalCooldown && WoW.CurrentRunicPower >= 30)
@@ -626,6 +621,8 @@ Spell,47568,EmpowerRuneWeapon,D1
 Spell,152279,BreathofSindragosa,D1
 
 Range,49020,Obliterate,D1
+
+GCD,49020,Obliterate
 
 Buff,51271,PillarofFrost
 Buff,59052,Rime
